@@ -101,7 +101,7 @@ while True:
     cv.putText(img, fps, (5, 35), cv.FONT_HERSHEY_COMPLEX_SMALL, 2.0, (255, 0, 0), 2)
     cv.imshow("Object Detection", img)
 
-    if cv.waitKey(2) == 27:
+    if cv.waitKey(2) == 27:  # esc
         break
 
 cap.release()
