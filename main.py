@@ -55,11 +55,11 @@ class DetectionModel(cv.dnn.DetectionModel):
     def __init__(self, dataDir: str = "data") -> None:
         self.DATA_DIR = dataDir
 
-        self.LABELS_PATH = path.join(self.DATA_DIR, "yolo3.txt")
+        self.WEIGHTS_PATH = path.join(self.DATA_DIR, "frozen_inference_graph.pb")
         self.CONFIG_PATH = path.join(
             self.DATA_DIR, "ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt"
         )
-        self.WEIGHTS_PATH = path.join(self.DATA_DIR, "frozen_inference_graph.pb")
+        self.LABELS_PATH = path.join(self.DATA_DIR, "yolo3.txt")
 
         self.names = None
 
