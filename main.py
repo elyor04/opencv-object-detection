@@ -24,7 +24,7 @@ def visualize_boxes_and_labels(
         if perc < 60:
             continue
         xmax, ymax = xmin + wd, ymin + hg
-        name = class_names[str(cls_id)].capitalize()
+        name = class_names[cls_id].capitalize()
 
         if name in colors:
             color = colors[name]
@@ -69,7 +69,9 @@ class DetectionModel(cv.dnn.DetectionModel):
 
     def loadNames(self) -> None:
         with open(dm.LABELS_PATH, "rt") as _f:
-            self.names = load(_f)
+            data = load(_f)
+            keys = map(int, data.keys())
+            self.names = dict(zip(keys, data.values()))
 
     def prepareAll(self) -> None:
         self.loadModel()
