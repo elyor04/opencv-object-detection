@@ -23,7 +23,7 @@ def visualize_boxes_and_labels(
         if perc < 60:
             continue
         xmax, ymax = xmin + wd, ymin + hg
-        name = class_names[cls_id].capitalize()
+        name = class_names[cls_id - 1].capitalize()
 
         if name in colors:
             color = colors[name]
@@ -54,14 +54,25 @@ def visualize_boxes_and_labels(
 class DetectionModel(cv.dnn.DetectionModel):
     def __init__(self, dataDir: str = "data") -> None:
         self.DATA_DIR = dataDir
+
         self.LABELS_PATH = path.join(self.DATA_DIR, "coco.names")
         self.CONFIG_PATH = path.join(
             self.DATA_DIR, "ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt"
         )
         self.WEIGHTS_PATH = path.join(self.DATA_DIR, "frozen_inference_graph.pb")
+
+        self.names = None
+
+    def loadModel(self) -> None:
         super().__init__(self.WEIGHTS_PATH, self.CONFIG_PATH)
 
+    def loadNames(self) -> None:
+        with open(dm.LABELS_PATH, "rt") as _f:
+            self.names = _f.read().splitlines()
+
     def prepareAll(self) -> None:
+        self.loadModel()
+        self.loadNames()
         self.setInputSize(320, 320)
         self.setInputScale(1.0 / 127.5)
         self.setInputMean((127.5, 127.5, 127.5))
@@ -70,10 +81,6 @@ class DetectionModel(cv.dnn.DetectionModel):
 
 dm = DetectionModel()
 dm.prepareAll()
-
-with open(dm.LABELS_PATH, "rt") as f:
-    classNames = f.read().strip("\n").splitlines()
-    classNames = {(id + 1): name for (id, name) in enumerate(classNames)}
 
 cap = cv.VideoCapture(0)
 prevTime = 0
@@ -84,7 +91,7 @@ while True:
 
     if len(classIds) != 0:
         visualize_boxes_and_labels(
-            img, bbox, classIds.flatten(), confs.flatten(), classNames
+            img, bbox, classIds.flatten(), confs.flatten(), dm.names
         )
 
     currTime = time()
