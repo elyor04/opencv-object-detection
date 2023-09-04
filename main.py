@@ -55,7 +55,7 @@ class DetectionModel(cv.dnn.DetectionModel):
     def __init__(self, dataDir: str = "data") -> None:
         self.DATA_DIR = dataDir
 
-        self.LABELS_PATH = path.join(self.DATA_DIR, "coco.names")
+        self.LABELS_PATH = path.join(self.DATA_DIR, "yolo3.txt")
         self.CONFIG_PATH = path.join(
             self.DATA_DIR, "ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt"
         )
@@ -87,7 +87,7 @@ prevTime = 0
 
 while True:
     success, img = cap.read()
-    classIds, confs, bbox = dm.detect(img, confThreshold=0.45)
+    classIds, confs, bbox = dm.detect(img, confThreshold=0.5)
 
     if len(classIds) != 0:
         visualize_boxes_and_labels(
