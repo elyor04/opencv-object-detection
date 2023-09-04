@@ -50,30 +50,37 @@ def visualize_boxes_and_labels(
 
     return image
 
+
 class DetectionModel(cv.dnn.DetectionModel):
-    pass
+    def __init__(self, dataDir: str = "data") -> None:
+        self.DATA_DIR = dataDir
+        self.LABELS_PATH = path.join(self.DATA_DIR, "coco.names")
+        self.CONFIG_PATH = path.join(
+            self.DATA_DIR, "ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt"
+        )
+        self.WEIGHTS_PATH = path.join(self.DATA_DIR, "frozen_inference_graph.pb")
+        super().__init__(self.WEIGHTS_PATH, self.CONFIG_PATH)
 
-data_dir = path.abspath("data/models/ssd_mobilenet_v3_large_coco_2020_01_14")
-classFile = path.join(data_dir, "coco.names")
-configPath = path.join(data_dir, "ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt")
-weightsPath = path.join(data_dir, "frozen_inference_graph.pb")
+    def prepareAll(self) -> None:
+        self.setInputSize(320, 320)
+        self.setInputScale(1.0 / 127.5)
+        self.setInputMean((127.5, 127.5, 127.5))
+        self.setInputSwapRB(True)
 
-with open(classFile, "rt") as f:
+
+dm = DetectionModel()
+dm.prepareAll()
+
+with open(dm.LABELS_PATH, "rt") as f:
     classNames = f.read().strip("\n").splitlines()
     classNames = {(id + 1): name for (id, name) in enumerate(classNames)}
-
-net = DetectionModel(weightsPath, configPath)
-net.setInputSize(320, 320)
-net.setInputScale(1.0 / 127.5)
-net.setInputMean((127.5, 127.5, 127.5))
-net.setInputSwapRB(True)
 
 cap = cv.VideoCapture(0)
 prevTime = 0
 
 while True:
     success, img = cap.read()
-    classIds, confs, bbox = net.detect(img, confThreshold=0.45)
+    classIds, confs, bbox = dm.detect(img, confThreshold=0.45)
 
     if len(classIds) != 0:
         visualize_boxes_and_labels(
