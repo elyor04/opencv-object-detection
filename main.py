@@ -1,6 +1,7 @@
 import cv2 as cv
 import numpy as np
 import os.path as path
+from json import load
 from time import time
 from random import randint
 from typing import Iterable
@@ -23,7 +24,7 @@ def visualize_boxes_and_labels(
         if perc < 60:
             continue
         xmax, ymax = xmin + wd, ymin + hg
-        name = class_names[cls_id - 1].capitalize()
+        name = class_names[str(cls_id)].capitalize()
 
         if name in colors:
             color = colors[name]
@@ -59,7 +60,7 @@ class DetectionModel(cv.dnn.DetectionModel):
         self.CONFIG_PATH = path.join(
             self.DATA_DIR, "ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt"
         )
-        self.LABELS_PATH = path.join(self.DATA_DIR, "yolo3.txt")
+        self.LABELS_PATH = path.join(self.DATA_DIR, "coco_names.json")
 
         self.names = None
 
@@ -68,7 +69,7 @@ class DetectionModel(cv.dnn.DetectionModel):
 
     def loadNames(self) -> None:
         with open(dm.LABELS_PATH, "rt") as _f:
-            self.names = _f.read().splitlines()
+            self.names = load(_f)
 
     def prepareAll(self) -> None:
         self.loadModel()
