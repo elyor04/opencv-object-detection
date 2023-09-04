@@ -50,6 +50,8 @@ def visualize_boxes_and_labels(
 
     return image
 
+class DetectionModel(cv.dnn.DetectionModel):
+    pass
 
 data_dir = path.abspath("data/models/ssd_mobilenet_v3_large_coco_2020_01_14")
 classFile = path.join(data_dir, "coco.names")
@@ -60,7 +62,7 @@ with open(classFile, "rt") as f:
     classNames = f.read().strip("\n").splitlines()
     classNames = {(id + 1): name for (id, name) in enumerate(classNames)}
 
-net = cv.dnn.DetectionModel(weightsPath, configPath)
+net = DetectionModel(weightsPath, configPath)
 net.setInputSize(320, 320)
 net.setInputScale(1.0 / 127.5)
 net.setInputMean((127.5, 127.5, 127.5))
