@@ -21,8 +21,6 @@ def visualize_boxes_and_labels(
 
     for (xmin, ymin, wd, hg), cls_id, score in zip(boxes, class_ids, scores):
         perc = int(score * 100)
-        if perc < 60:
-            continue
         xmax, ymax = xmin + wd, ymin + hg
         name = class_names[cls_id].capitalize()
 
@@ -90,7 +88,7 @@ prevTime = 0
 
 while True:
     success, img = cap.read()
-    classIds, confs, bbox = dm.detect(img, confThreshold=0.5)
+    classIds, confs, bbox = dm.detect(img, confThreshold=0.6)
 
     if len(classIds) != 0:
         visualize_boxes_and_labels(
